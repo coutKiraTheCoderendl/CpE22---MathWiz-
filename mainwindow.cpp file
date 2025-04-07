@@ -1,0 +1,56 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::on_btn_beg_clicked()
+{
+    qDebug() << "User Clicked Beginner";
+    ui->stackedWidget->setCurrentIndex(2);
+}
+
+
+void MainWindow::on_btn_int_clicked()
+{
+    qDebug() << "User Clicked Intermediate";
+    ui->stackedWidget->setCurrentIndex(3);
+}
+
+
+void MainWindow::on_btn_adv_clicked()
+{
+    qDebug() << "User Clicked Advanced";
+    ui->stackedWidget->setCurrentIndex(4);
+}
+
+
+void MainWindow::on_back_beg_clicked()
+{
+    qDebug() << "User went main from beg";
+    ui->stackedWidget->setCurrentIndex(1);
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    qDebug() << "User went main from int";
+    ui->stackedWidget->setCurrentIndex(1);
+}
+
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    qDebug() << "User went main from adv";
+    ui->stackedWidget->setCurrentIndex(1);
+}
+
