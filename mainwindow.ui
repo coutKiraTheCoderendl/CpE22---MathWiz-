@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow
+{
+background-color:black;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>801</width>
+      <height>581</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="page"/>
+    <widget class="QWidget" name="page_2">
+     <widget class="QPushButton" name="btn_beg">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>290</y>
+        <width>191</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton
+{
+background-color:rgb(125, 125, 125);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:Hover
+{
+background-color:rgb(100, 100, 100);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:pressed
+{
+background-color:rgb(75, 75, 75);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}</string>
+      </property>
+      <property name="text">
+       <string>Beginner</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_int">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>360</y>
+        <width>191</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton
+{
+background-color:rgb(125, 125, 125);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:Hover
+{
+background-color:rgb(100, 100, 100);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:pressed
+{
+background-color:rgb(75, 75, 75);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}</string>
+      </property>
+      <property name="text">
+       <string>Intermediate</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_adv">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>430</y>
+        <width>191</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton
+{
+background-color:rgb(125, 125, 125);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:Hover
+{
+background-color:rgb(100, 100, 100);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:pressed
+{
+background-color:rgb(75, 75, 75);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}</string>
+      </property>
+      <property name="text">
+       <string>Advanced</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>100</y>
+        <width>161</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+color: white;
+	
+	font: 50pt &quot;Gloucester MT&quot;;
+}</string>
+      </property>
+      <property name="text">
+       <string>MathWiz</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_3">
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+	color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Difficulty: Beginner</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>10</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Score:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>10</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Time:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="back_beg">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>540</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton
+{
+background-color:rgb(125, 125, 125);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:Hover
+{
+background-color:rgb(100, 100, 100);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:pressed
+{
+background-color:rgb(75, 75, 75);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}</string>
+      </property>
+      <property name="text">
+       <string>Back</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_4">
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Difficulty: Intermediate</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>10</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Score:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>10</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Time:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>540</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton
+{
+background-color:rgb(125, 125, 125);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:Hover
+{
+background-color:rgb(100, 100, 100);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:pressed
+{
+background-color:rgb(75, 75, 75);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}</string>
+      </property>
+      <property name="text">
+       <string>Back</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_5">
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Difficulty: Advanced</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>10</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Score:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>10</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel
+{
+	font: 9pt &quot;Small Fonts&quot;;
+color:white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Time:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>540</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton
+{
+background-color:rgb(125, 125, 125);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:Hover
+{
+background-color:rgb(100, 100, 100);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}
+
+QPushButton:pressed
+{
+background-color:rgb(75, 75, 75);
+color:white;
+	font: 9pt &quot;Small Fonts&quot;;
+}</string>
+      </property>
+      <property name="text">
+       <string>Back</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
