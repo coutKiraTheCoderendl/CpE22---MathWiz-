@@ -1,22 +1,208 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDebug>
+#include <QTimer>
+#include <QRandomGenerator>
+#include <algorithm>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+
+
 {
     ui->setupUi(this);
+
+    //START OPTION BUTTONS (BEG)
+    ui->questionLabel->setStyleSheet("color: black; background-color: gray; border: 2px solid white;");
+    ui->questionLabel->setAlignment(Qt::AlignCenter);
+
+    optionButtons = { ui->optButton1, ui->optButton2, ui->optButton3};
+
+    connect(ui->optButton1, &QPushButton::clicked, this, [=]() { checkAnswer(0); });
+    connect(ui->optButton2, &QPushButton::clicked, this, [=]() { checkAnswer(1); });
+    connect(ui->optButton3, &QPushButton::clicked, this, [=]() { checkAnswer(2); });
+
+    score = 0;
+    currentQuestionIndex = 0;
+
+    loadQuestions();
+    pickRandomQuestions();
+    showQuestion();
+    //END
+
+
+    begTimer = new QTimer(this);
+    intTimer = new QTimer(this);
+    advTimer = new QTimer(this);
+    begRemaining=20;
+    intRemaining=20;
+    advRemaining=20;
+
+    connect(begTimer, &QTimer::timeout, this, &MainWindow::updatebegTimer);
+    connect(intTimer, &QTimer::timeout, this, &MainWindow::updateintTimer);
+    connect(advTimer, &QTimer::timeout, this, &MainWindow::updateadvTimer);
+
+    connect(ui->btn_beg, &QPushButton::clicked, this, [this]() { startTimer(); });
+    connect(ui->btn_int, &QPushButton::clicked, this, [this]() { startTimer(); });
+    connect(ui->btn_adv, &QPushButton::clicked, this, [this]() { startTimer(); });
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+void MainWindow::myfunction()
+{
+    qDebug() << "update..";
+}
+
+//ALL QUESTIONS (BEG)
+void MainWindow::loadQuestions() {
+    allQuestions = {
+        { "2 + 2", "4", {"3", "5"} },
+        { "3 + 2", "5", {"1", "0"} },
+        { "18 - 14", "4", {"8", "2"} },
+        { "2 * 5", "10", {"7", "14"} },
+        { "16 + 3", "19", {"2", "4"} },
+        };
+}
+
+//PICK RANDOM SET OF QUESTIONS (BEG)
+void MainWindow::pickRandomQuestions() {
+    selectedQuestions = allQuestions;
+    std::shuffle(selectedQuestions.begin(), selectedQuestions.end(), *QRandomGenerator::global());
+    selectedQuestions.resize(3);
+}
+
+//SHOW QUESTIONS ON UI (BEG)
+void MainWindow::showQuestion() {
+    const Question &q = selectedQuestions[currentQuestionIndex];
+
+    //Combine correct + wrong answers
+    QStringList options = q.wrongAns;
+    options.append(q.correctAns);
+    std::shuffle(options.begin(), options.end(), *QRandomGenerator::global());
+
+    //Display question
+    ui->questionLabel->setText(q.text);
+
+    //Set button text and track correct index
+    for (int i = 0; i < optionButtons.size(); ++i) {
+        optionButtons[i]->setText(options[i]);
+        optionButtons[i]->setEnabled(true);
+        optionButtons[i]->setStyleSheet("");
+    }
+
+    correctIndex = options.indexOf(q.correctAns);
+}
+
+//check beg answer
+void MainWindow::checkAnswer(int index) {
+    for (int i = 0; i < optionButtons.size(); ++i) {
+        optionButtons[i]->setEnabled(false);
+        if (i == correctIndex) {
+            optionButtons[i]->setStyleSheet("background-color: green; color: white;");
+        } else if (i == index) {
+            optionButtons[i]->setStyleSheet("background-color: red; color: white;");
+        }
+    }
+
+    if (index == correctIndex) {
+        score++;
+    }
+
+    ui->begScoreLabel->setText(QString("Score: %1").arg(score));
+
+    //Go to next question
+    QTimer::singleShot(1500, this, [=]() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < selectedQuestions.size()) {
+            showQuestion();
+        } else {
+            ui->questionLabel->setText("End of Quiz!");
+        }
+    });
+}
+
+
+void MainWindow::startTimer()
+{
+    if (ui->stackedWidget->currentIndex() == 2 && !begTimer->isActive())
+    {
+        begRemaining=20;
+        ui->timer_beg->setText(QString("Time: %1").arg(begRemaining));
+        begTimer->start(1000);
+    }
+
+    else if (ui->stackedWidget->currentIndex() == 3 && !intTimer->isActive())
+    {
+        intRemaining=15;
+        ui->timer_beg_2->setText(QString("Time: %1").arg(intRemaining));
+        intTimer->start(1000);
+    }
+
+    else if (ui->stackedWidget->currentIndex() == 4 && !advTimer->isActive())
+    {
+        advRemaining=10;
+        ui->timer_beg_3->setText(QString("Time: %1").arg(advRemaining));
+        advTimer->start(1000);
+    }
+}
+
+void MainWindow::updatebegTimer()
+{
+    if (begRemaining > 0)
+    {
+        begRemaining--;
+        ui->timer_beg->setText(QString("Time: %1").arg(begRemaining));
+    }
+
+    else
+    {
+        begTimer->stop();
+        ui->timer_beg->setText("Time's up!");
+    }
+}
+
+void MainWindow::updateintTimer()
+{
+    if (intRemaining > 0)
+    {
+        intRemaining--;
+        ui->timer_beg_2->setText(QString("Time: %1").arg(intRemaining));
+    }
+
+    else
+    {
+        intTimer->stop();
+        ui->timer_beg_2->setText("Time's up!");
+    }
+}
+
+void MainWindow::updateadvTimer()
+{
+    if (advRemaining > 0)
+    {
+        advRemaining--;
+        ui->timer_beg_3->setText(QString("Time: %1").arg(advRemaining));
+    }
+
+    else
+    {
+        advTimer->stop();
+        ui->timer_beg_3->setText("Time's up!");
+    }
+}
+
 void MainWindow::on_btn_beg_clicked()
 {
     qDebug() << "User Clicked Beginner";
     ui->stackedWidget->setCurrentIndex(2);
+    startTimer();
 }
 
 
@@ -24,6 +210,7 @@ void MainWindow::on_btn_int_clicked()
 {
     qDebug() << "User Clicked Intermediate";
     ui->stackedWidget->setCurrentIndex(3);
+    startTimer();
 }
 
 
@@ -31,6 +218,7 @@ void MainWindow::on_btn_adv_clicked()
 {
     qDebug() << "User Clicked Advanced";
     ui->stackedWidget->setCurrentIndex(4);
+    startTimer();
 }
 
 
@@ -38,19 +226,28 @@ void MainWindow::on_back_beg_clicked()
 {
     qDebug() << "User went main from beg";
     ui->stackedWidget->setCurrentIndex(1);
+    begTimer->stop();
+    begRemaining=20;
+    ui->timer_beg->setText(QString("Time: %1").arg(begRemaining));
 }
 
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_back_int_clicked()
 {
     qDebug() << "User went main from int";
     ui->stackedWidget->setCurrentIndex(1);
+    intTimer->stop();
+    intRemaining=15;
+    ui->timer_beg_2->setText(QString("Time: %1").arg(intRemaining));
 }
 
 
-void MainWindow::on_pushButton_2_clicked()
+void MainWindow::on_back_adv_clicked()
 {
     qDebug() << "User went main from adv";
     ui->stackedWidget->setCurrentIndex(1);
+    advTimer->stop();
+    advRemaining=10;
+    ui->timer_beg_3->setText(QString("Time: %1").arg(advRemaining));
 }
 
