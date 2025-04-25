@@ -1,7 +1,31 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#include <QLabel>
 
+#include "qpushbutton.h"
 #include <QMainWindow>
+#include <QVector>
+#include <QStringList>
+#include <QTimer>
+#include <QPushButton>
+#include <QLabel>
+
+struct Question {
+    QString text;
+    QString correctAns;
+    QString wrongAns;
+};
+
+struct QuestionSet {
+    QVector <Question> questions;
+    int currentIndex = 0;
+    int score = 0;
+    int correctIndex = -1; //index of correct answer after shuffle
+    
+    QLabel* questionLabel;
+    QLabel* scoreLabel;
+    QVector <QPushButton*> optionButtons;
+};
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,6 +40,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+public slots:
+    void myfunction();
 
 private slots:
     void on_btn_beg_clicked();
@@ -26,12 +52,37 @@ private slots:
 
     void on_back_beg_clicked();
 
-    void on_pushButton_clicked();
+    void on_back_int_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_back_adv_clicked();
+
+    void startTimer();
+    void updatebegTimer();
+    void updateintTimer();
+    void updateadvTimer();
+
 
 private:
     Ui::MainWindow *ui;
+    QTimer *begTimer;
+    QTimer *intTimer;
+    QTimer *advTimer;
+    int begRemaining;
+    int intRemaining;
+    int advRemaining;
+    
+    QuestionSet beginnerSet;
+    QuestionSet intermediateSet;
+    QuestionSet advancedSet;
+    
+    QVector<Question> allQuestions;
+    QVector<Question> selectedQuestions;
+    QVector<QPushButton*> optionButtons;
+    
+    void loadQuestions();
+    void pickRandomQuestions();
+    void showQuestion();
+    void checkAnswer(QuestionSet &set, int selectedIndex);
 };
-#endif // MAINWINDOW_H
 
+#endif // MAINWINDOW_H
