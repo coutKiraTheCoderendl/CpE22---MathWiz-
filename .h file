@@ -9,11 +9,18 @@
 #include <QTimer>
 #include <QPushButton>
 #include <QLabel>
+#include <QMediaPlayer>
+#include <QAudioOutput>
 
 struct Question {
     QString text;
     QString correctAns;
-    QString wrongAns;
+    QStringList wrongAns;
+
+    Question() : text(""), correctAns(""), wrongAns() {}
+
+    Question(QString t, QString correct, QStringList wrong)
+        : text(t), correctAns(correct), wrongAns(wrong) {}
 };
 
 struct QuestionSet {
@@ -21,7 +28,7 @@ struct QuestionSet {
     int currentIndex = 0;
     int score = 0;
     int correctIndex = -1; //index of correct answer after shuffle
-    
+
     QLabel* questionLabel;
     QLabel* scoreLabel;
     QVector <QPushButton*> optionButtons;
@@ -70,19 +77,34 @@ private:
     int begRemaining;
     int intRemaining;
     int advRemaining;
-    
+
     QuestionSet beginnerSet;
     QuestionSet intermediateSet;
     QuestionSet advancedSet;
-    
+
     QVector<Question> allQuestions;
     QVector<Question> selectedQuestions;
     QVector<QPushButton*> optionButtons;
-    
+    QVector<Question> beginnerQuestions;
+    QVector<Question> intermediateQuestions;
+    QVector<Question> advancedQuestions;
+
     void loadQuestions();
-    void pickRandomQuestions();
-    void showQuestion();
+    void pickRandomQuestions(QuestionSet &set, QVector<Question> &pool);
+    void showQuestion(QuestionSet &set);
     void checkAnswer(QuestionSet &set, int selectedIndex);
+    void forceEndQuiz(QuestionSet &set);
+
+    //sounds
+    QMediaPlayer *correctSound;
+    QAudioOutput *correctAudioOutput;
+    QMediaPlayer *wrongSound;
+    QAudioOutput *wrongAudioOutput;
+    QMediaPlayer *quizOverSound;
+    QAudioOutput *quizOverAudioOutput;
+    QMediaPlayer *BGMSound;
+    QAudioOutput *BGMAudioOutput;
+
 };
 
 #endif // MAINWINDOW_H
