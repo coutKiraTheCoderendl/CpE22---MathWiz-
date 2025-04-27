@@ -52,21 +52,18 @@ public slots:
 
 private slots:
     void on_btn_beg_clicked();
-
     void on_btn_int_clicked();
-
     void on_btn_adv_clicked();
-
     void on_back_beg_clicked();
-
     void on_back_int_clicked();
-
     void on_back_adv_clicked();
 
     void startTimer();
     void updatebegTimer();
     void updateintTimer();
     void updateadvTimer();
+
+    void on_btn_quit_clicked();
 
 
 private:
@@ -104,6 +101,8 @@ private:
     QAudioOutput *quizOverAudioOutput;
     QMediaPlayer *BGMSound;
     QAudioOutput *BGMAudioOutput;
+    QMediaPlayer *clickSound;
+    QAudioOutput *clickAudioOutput;
 
 };
 
