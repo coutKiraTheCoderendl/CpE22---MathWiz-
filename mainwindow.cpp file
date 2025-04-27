@@ -18,35 +18,55 @@ MainWindow::MainWindow(QWidget *parent)
     correctSound = new QMediaPlayer(this);
     correctAudioOutput = new QAudioOutput(this);
     correctSound->setAudioOutput(correctAudioOutput);
-    correctSound->setSource(QUrl("qrc:/sounds/sounds/correct.wav"));
+    correctSound->setSource(QUrl("qrc:/sounds/sounds/mp3/correct.mp3"));
     correctAudioOutput->setVolume(1.0f);
 
     wrongSound = new QMediaPlayer(this);
     wrongAudioOutput = new QAudioOutput(this);
     wrongSound->setAudioOutput(wrongAudioOutput);
-    wrongSound->setSource(QUrl("qrc:/sounds/sounds/wrong.wav"));
+    wrongSound->setSource(QUrl("qrc:/sounds/sounds/mp3/wrong.mp3"));
     wrongAudioOutput->setVolume(1.0f);
 
     quizOverSound = new QMediaPlayer(this);
     quizOverAudioOutput = new QAudioOutput(this);
     quizOverSound->setAudioOutput(quizOverAudioOutput);
-    quizOverSound->setSource(QUrl("qrc:/sounds/sounds/quizover.wav"));
-    quizOverAudioOutput->setVolume(1.0f);
+    quizOverSound->setSource(QUrl("qrc:/sounds/sounds/mp3/quizover.mp3"));
+    quizOverAudioOutput->setVolume(0.7f);
 
     BGMSound = new QMediaPlayer(this);
     BGMAudioOutput = new QAudioOutput(this);
     BGMSound->setAudioOutput(BGMAudioOutput);
-    BGMSound->setSource(QUrl("qrc:/sounds/sounds/BGM.wav"));
-    BGMAudioOutput->setVolume(0.2f);
+    BGMSound->setSource(QUrl("qrc:/sounds/sounds/mp3/BGM.mp3"));
+    BGMAudioOutput->setVolume(0.1f);
+
+    clickSound = new QMediaPlayer(this);
+    clickAudioOutput = new QAudioOutput(this);
+    clickSound->setAudioOutput(clickAudioOutput);
+    clickSound->setSource(QUrl("qrc:/sounds/sounds/mp3/click.mp3"));
+    clickAudioOutput->setVolume(0.8f);
 
     //BACKGROUND MUSIC WHEN PROGRAM STARTS
     BGMSound->play();
 //END
-
-//INSERT: LOADING SCREEN TOO KAY BIDABIDA MAN KA
+    
     //SETUP OPTION BUTTONS (BEG)
     beginnerSet.questionLabel = ui->questionLabel_beg;
-    ui->questionLabel_beg->setStyleSheet("background-color: gray; border: 2px solid white;");
+    ui->questionLabel_beg->setStyleSheet(R"(
+    QLabel {
+        background: qlineargradient(
+            x1: 0, y1: 0, x2: 1, y2: 0,
+            stop: 0 #F5F5F5, /* Light Gray */
+            stop: 1 #D9D9D9  /* Slightly Darker Gray */
+        );
+        color: #333; /* Dark Gray Text */
+        border: 1px solid #B0B0B0; /* Subtle Border */
+        padding: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: "Segoe UI", "Arial", sans-serif;
+        text-align: center;
+    }
+)");
     ui->questionLabel_beg->setAlignment(Qt::AlignCenter);
     beginnerSet.scoreLabel = ui->scoreLabel_beg;
     beginnerSet.optionButtons = { ui->btn1_beg, ui->btn2_beg, ui->btn3_beg };
@@ -61,7 +81,22 @@ MainWindow::MainWindow(QWidget *parent)
 
     //SETUP OPTION BUTTONS (INT)
     intermediateSet.questionLabel = ui->questionLabel_int;
-    ui->questionLabel_int->setStyleSheet("background-color: gray; border: 2px solid white;");
+    ui->questionLabel_int->setStyleSheet(R"(
+    QLabel {
+        background: qlineargradient(
+            x1: 0, y1: 0, x2: 1, y2: 0,
+            stop: 0 #F5F5F5, /* Light Gray */
+            stop: 1 #D9D9D9  /* Slightly Darker Gray */
+        );
+        color: #333; /* Dark Gray Text */
+        border: 1px solid #B0B0B0; /* Subtle Border */
+        padding: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: "Segoe UI", "Arial", sans-serif;
+        text-align: center;
+    }
+)");
     ui->questionLabel_int->setAlignment(Qt::AlignCenter);
     intermediateSet.scoreLabel = ui->scoreLabel_int;
     intermediateSet.optionButtons = { ui->btn1_int, ui->btn2_int, ui->btn3_int };
@@ -77,7 +112,22 @@ MainWindow::MainWindow(QWidget *parent)
 
     //SETUP OPTION BUTTONS (ADV)
     advancedSet.questionLabel = ui->questionLabel_adv;
-    ui->questionLabel_adv->setStyleSheet("background-color: gray; border: 2px solid white;");
+    ui->questionLabel_adv->setStyleSheet(R"(
+    QLabel {
+        background: qlineargradient(
+            x1: 0, y1: 0, x2: 1, y2: 0,
+            stop: 0 #F5F5F5, /* Light Gray */
+            stop: 1 #D9D9D9  /* Slightly Darker Gray */
+        );
+        color: #333; /* Dark Gray Text */
+        border: 1px solid #B0B0B0; /* Subtle Border */
+        padding: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: "Segoe UI", "Arial", sans-serif;
+        text-align: center;
+    }
+)");
     ui->questionLabel_adv->setAlignment(Qt::AlignCenter);
     advancedSet.scoreLabel = ui->scoreLabel_adv;
     advancedSet.optionButtons = { ui->btn1_adv, ui->btn2_adv, ui->btn3_adv };
@@ -131,12 +181,10 @@ void MainWindow::myfunction()
 void MainWindow::loadQuestions() {
     beginnerQuestions = {
                          { "Solve for x:   x + 3 = 7", "4", {"3", "5"} },
-                         { "Multiply:   (x+3)(x+2)", "x²+5x+6", {"x²+1x+6", "x²+12x+6"} },
                          { "1 + 0 = ?", "1", {"0", "2"} },
                          { "Convert 0.25 to a fraction.", "1/4", {"1/5", "2/5" } },
                          { "What is 10% of 500?", "50", {"5", "55" } },
-                         { "What is 10% of 500?", "50", {"5", "55" } },
-                         { "Convert ⅘ to a percentage.", "80%", {"45%", "90%" } },
+                         { "Convert 4/5 to a percentage.", "80%", {"45%", "90%" } },
                          { "Solve: x − 3 = 9", "12", {"14", "13" } },
                          { "Simplify: 4 ( 2x − 1 )", "8x - 4", {"8x-8", "8x+4" } },
                          { "Which is bigger: 0.7 or 3/4?", "3/4", {"0.7", "They are equal" } },
@@ -208,6 +256,7 @@ void MainWindow::showQuestion(QuestionSet &set) {
 
     if (set.currentIndex < 0 || set.currentIndex >= set.questions.size()) {
         set.questionLabel->setText("Quiz Over!");
+
         //make timer stop when quiz is over
         if (set.questionLabel == ui->questionLabel_beg) begTimer->stop();
         else if (set.questionLabel == ui->questionLabel_int) intTimer->stop();
@@ -228,7 +277,28 @@ void MainWindow::showQuestion(QuestionSet &set) {
     for (int i = 0; i < set.optionButtons.size(); ++i) {
         set.optionButtons[i]->setText(options[i]);
         set.optionButtons[i]->setEnabled(true);
-        set.optionButtons[i]->setStyleSheet("");
+        set.optionButtons[i]->setStyleSheet(R"(
+    QPushButton {
+        background: qlineargradient(
+            x1: 0, y1: 0, x2: 0, y2: 1,
+            stop: 0 #B0B0B0, /* Light Gray */
+            stop: 1 #808080  /* Dark Gray */
+        );
+        color: black;
+        border: 2px solid white;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-family: "Segoe UI", "Arial", sans-serif;
+    }
+    QPushButton:hover {
+        background: qlineargradient(
+            x1: 0, y1: 0, x2: 0, y2: 1,
+            stop: 0 #D0D0D0, /* Lighter Gray */
+            stop: 1 #A0A0A0  /* Medium Gray */
+        );
+    }
+
+)");
     }
 
     set.correctIndex = options.indexOf(q.correctAns);
@@ -238,13 +308,77 @@ void MainWindow::showQuestion(QuestionSet &set) {
 void MainWindow::checkAnswer(QuestionSet &set, int selectedIndex) {
     for (int i = 0; i < set.optionButtons.size(); ++i) {
         set.optionButtons[i]->setEnabled(false);
+
         if (i == set.correctIndex) {
-            set.optionButtons[i]->setStyleSheet("background-color: green; color: white;");
+            set.optionButtons[i]->setStyleSheet(R"(
+                QPushButton {
+                    background: qlineargradient(
+                        x1: 0, y1: 0, x2: 0, y2: 1,
+                        stop: 0 #50C878, /* Light Green */
+                        stop: 1 #3E8E41  /* Dark Green */
+                    );
+                    color: black;
+                    border: 2px solid white;
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    font-family: "Segoe UI", "Arial", sans-serif;
+                }
+                QPushButton:pressed {
+                    background: qlineargradient(
+                        x1: 0, y1: 0, x2: 0, y2: 1,
+                        stop: 0 #3E8E41, /* Darker Green */
+                        stop: 1 #2A6630  /* Very Dark Green */
+                    );
+                }
+            )");
         } else if (i == selectedIndex) {
-            set.optionButtons[i]->setStyleSheet("background-color: red; color: white;");
+            set.optionButtons[i]->setStyleSheet(R"(
+                QPushButton {
+                    background: qlineargradient(
+                        x1: 0, y1: 0, x2: 0, y2: 1,
+                        stop: 0 #E74C3C, /* Light Red */
+                        stop: 1 #C0392B  /* Dark Red */
+                    );
+                    color: black;
+                    border: 2px solid white;
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    font-family: "Segoe UI", "Arial", sans-serif;
+                }
+                QPushButton:pressed {
+                    background: qlineargradient(
+                        x1: 0, y1: 0, x2: 0, y2: 1,
+                        stop: 0 #C0392B, /* Darker Red */
+                        stop: 1 #922B21  /* Very Dark Red */
+                    );
+                }
+            )");
+        } else {
+            set.optionButtons[i]->setStyleSheet(R"(
+                QPushButton {
+                    background: qlineargradient(
+                        x1: 0, y1: 0, x2: 0, y2: 1,
+                        stop: 0 #B0B0B0, /* Light Gray */
+                        stop: 1 #808080  /* Dark Gray */
+                    );
+                    color: black;
+                    border: 2px solid white;
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    font-family: "Segoe UI", "Arial", sans-serif;
+                }
+                QPushButton:pressed {
+                    background: qlineargradient(
+                        x1: 0, y1: 0, x2: 0, y2: 1,
+                        stop: 0 #707070, /* Darker Gray */
+                        stop: 1 #505050  /* Very Dark Gray */
+                    );
+                }
+            )");
         }
     }
 
+    // Play sound and update score
     if (selectedIndex == set.correctIndex) {
         set.score++;
         correctSound->play();
@@ -252,13 +386,16 @@ void MainWindow::checkAnswer(QuestionSet &set, int selectedIndex) {
         wrongSound->play();
     }
 
+    // Update score label
     set.scoreLabel->setText(QString("Score: %1").arg(set.score));
 
+    // Delay before showing the next question
     QTimer::singleShot(1500, this, [&]() {
         set.currentIndex++;
         showQuestion(set);
     });
 }
+
 
 void MainWindow::forceEndQuiz(QuestionSet &set)
 {
@@ -349,6 +486,7 @@ void MainWindow::on_btn_beg_clicked()
     ui->stackedWidget->setCurrentIndex(2);
     startTimer();
     showQuestion(beginnerSet);
+    clickSound->play();
 }
 
 
@@ -358,6 +496,7 @@ void MainWindow::on_btn_int_clicked()
     ui->stackedWidget->setCurrentIndex(3);
     startTimer();
     showQuestion(intermediateSet);
+    clickSound->play();
 }
 
 
@@ -367,6 +506,7 @@ void MainWindow::on_btn_adv_clicked()
     ui->stackedWidget->setCurrentIndex(4);
     startTimer();
     showQuestion(advancedSet);
+    clickSound->play();
 }
 
 
@@ -377,9 +517,12 @@ void MainWindow::on_back_beg_clicked()
     begTimer->stop();
     begRemaining=30;
     ui->timer_beg->setText(QString("Time: %1").arg(begRemaining));
+    beginnerSet.score = 0;
+    beginnerSet.scoreLabel->setText("Score: 0");
 
     pickRandomQuestions(beginnerSet, beginnerQuestions);
     BGMSound->play();
+    clickSound->play();
 }
 
 
@@ -390,9 +533,12 @@ void MainWindow::on_back_int_clicked()
     intTimer->stop();
     intRemaining=25;
     ui->timer_beg_2->setText(QString("Time: %1").arg(intRemaining));
+    intermediateSet.score = 0;
+    intermediateSet.scoreLabel->setText("Score: 0");
 
     pickRandomQuestions(intermediateSet, intermediateQuestions);
     BGMSound->play();
+    clickSound->play();
 }
 
 
@@ -403,8 +549,18 @@ void MainWindow::on_back_adv_clicked()
     advTimer->stop();
     advRemaining=20;
     ui->timer_beg_3->setText(QString("Time: %1").arg(advRemaining));
+    advancedSet.score = 0;
+    advancedSet.scoreLabel->setText("Score: 0");
 
     pickRandomQuestions(advancedSet, advancedQuestions);
     BGMSound->play();
+    clickSound->play();
 }
+
+void MainWindow::on_btn_quit_clicked()
+{
+    clickSound->play();
+    QApplication::quit();
+}
+
 
