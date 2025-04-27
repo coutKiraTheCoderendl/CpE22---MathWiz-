@@ -4,34 +4,101 @@
 #include <QTimer>
 #include <QRandomGenerator>
 #include <algorithm>
-
+#include <QMediaPlayer>
+#include <QAudioOutput>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 
-
 {
     ui->setupUi(this);
 
-    //START OPTION BUTTONS (BEG)
-    ui->questionLabel->setStyleSheet("color: black; background-color: gray; border: 2px solid white;");
-    ui->questionLabel->setAlignment(Qt::AlignCenter);
+//FOR SOUNDS
+    correctSound = new QMediaPlayer(this);
+    correctAudioOutput = new QAudioOutput(this);
+    correctSound->setAudioOutput(correctAudioOutput);
+    correctSound->setSource(QUrl("qrc:/sounds/sounds/correct.wav"));
+    correctAudioOutput->setVolume(1.0f);
 
-    optionButtons = { ui->optButton1, ui->optButton2, ui->optButton3};
+    wrongSound = new QMediaPlayer(this);
+    wrongAudioOutput = new QAudioOutput(this);
+    wrongSound->setAudioOutput(wrongAudioOutput);
+    wrongSound->setSource(QUrl("qrc:/sounds/sounds/wrong.wav"));
+    wrongAudioOutput->setVolume(1.0f);
 
-    connect(ui->optButton1, &QPushButton::clicked, this, [=]() { checkAnswer(0); });
-    connect(ui->optButton2, &QPushButton::clicked, this, [=]() { checkAnswer(1); });
-    connect(ui->optButton3, &QPushButton::clicked, this, [=]() { checkAnswer(2); });
+    quizOverSound = new QMediaPlayer(this);
+    quizOverAudioOutput = new QAudioOutput(this);
+    quizOverSound->setAudioOutput(quizOverAudioOutput);
+    quizOverSound->setSource(QUrl("qrc:/sounds/sounds/quizover.wav"));
+    quizOverAudioOutput->setVolume(1.0f);
 
-    score = 0;
-    currentQuestionIndex = 0;
+    BGMSound = new QMediaPlayer(this);
+    BGMAudioOutput = new QAudioOutput(this);
+    BGMSound->setAudioOutput(BGMAudioOutput);
+    BGMSound->setSource(QUrl("qrc:/sounds/sounds/BGM.wav"));
+    BGMAudioOutput->setVolume(0.2f);
 
-    loadQuestions();
-    pickRandomQuestions();
-    showQuestion();
+    //BACKGROUND MUSIC WHEN PROGRAM STARTS
+    BGMSound->play();
+//END
+
+//INSERT: LOADING SCREEN TOO KAY BIDABIDA MAN KA
+    //SETUP OPTION BUTTONS (BEG)
+    beginnerSet.questionLabel = ui->questionLabel_beg;
+    ui->questionLabel_beg->setStyleSheet("background-color: gray; border: 2px solid white;");
+    ui->questionLabel_beg->setAlignment(Qt::AlignCenter);
+    beginnerSet.scoreLabel = ui->scoreLabel_beg;
+    beginnerSet.optionButtons = { ui->btn1_beg, ui->btn2_beg, ui->btn3_beg };
     //END
 
+    //CONNECT UI BUTTONS (BEG)
+    connect(ui->btn1_beg, &QPushButton::clicked, this, [=]() { checkAnswer(beginnerSet, 0); });
+    connect(ui->btn2_beg, &QPushButton::clicked, this, [=]() { checkAnswer(beginnerSet, 1); });
+    connect(ui->btn3_beg, &QPushButton::clicked, this, [=]() { checkAnswer(beginnerSet, 2); });
+    //END
+
+
+    //SETUP OPTION BUTTONS (INT)
+    intermediateSet.questionLabel = ui->questionLabel_int;
+    ui->questionLabel_int->setStyleSheet("background-color: gray; border: 2px solid white;");
+    ui->questionLabel_int->setAlignment(Qt::AlignCenter);
+    intermediateSet.scoreLabel = ui->scoreLabel_int;
+    intermediateSet.optionButtons = { ui->btn1_int, ui->btn2_int, ui->btn3_int };
+    //END
+
+
+    //CONNECT UI BUTTONS (INT)
+    connect(ui->btn1_int, &QPushButton::clicked, this, [=]() { checkAnswer(intermediateSet, 0); });
+    connect(ui->btn2_int, &QPushButton::clicked, this, [=]() { checkAnswer(intermediateSet, 1); });
+    connect(ui->btn3_int, &QPushButton::clicked, this, [=]() { checkAnswer(intermediateSet, 2); });
+    //END
+
+
+    //SETUP OPTION BUTTONS (ADV)
+    advancedSet.questionLabel = ui->questionLabel_adv;
+    ui->questionLabel_adv->setStyleSheet("background-color: gray; border: 2px solid white;");
+    ui->questionLabel_adv->setAlignment(Qt::AlignCenter);
+    advancedSet.scoreLabel = ui->scoreLabel_adv;
+    advancedSet.optionButtons = { ui->btn1_adv, ui->btn2_adv, ui->btn3_adv };
+    //END
+
+
+    //CONNECT UI BUTTONS (ADV)
+    connect(ui->btn1_adv, &QPushButton::clicked, this, [=]() { checkAnswer(advancedSet, 0); });
+    connect(ui->btn2_adv, &QPushButton::clicked, this, [=]() { checkAnswer(advancedSet, 1); });
+    connect(ui->btn3_adv, &QPushButton::clicked, this, [=]() { checkAnswer(advancedSet, 2); });
+    //END
+
+
+    //FOR QUESTIONS
+    loadQuestions();
+    pickRandomQuestions(beginnerSet, beginnerQuestions);
+    pickRandomQuestions(intermediateSet, intermediateQuestions);
+    pickRandomQuestions(advancedSet, advancedQuestions);
+
+    showQuestion(beginnerSet); // default to beginner to test
+    //END
 
     begTimer = new QTimer(this);
     intTimer = new QTimer(this);
@@ -60,72 +127,147 @@ void MainWindow::myfunction()
     qDebug() << "update..";
 }
 
-//ALL QUESTIONS (BEG)
+//ALL QUESTIONS
 void MainWindow::loadQuestions() {
-    allQuestions = {
-        { "2 + 2", "4", {"3", "5"} },
-        { "3 + 2", "5", {"1", "0"} },
-        { "18 - 14", "4", {"8", "2"} },
-        { "2 * 5", "10", {"7", "14"} },
-        { "16 + 3", "19", {"2", "4"} },
+    beginnerQuestions = {
+                         { "Solve for x:   x + 3 = 7", "4", {"3", "5"} },
+                         { "Multiply:   (x+3)(x+2)", "x²+5x+6", {"x²+1x+6", "x²+12x+6"} },
+                         { "1 + 0 = ?", "1", {"0", "2"} },
+                         { "Convert 0.25 to a fraction.", "1/4", {"1/5", "2/5" } },
+                         { "What is 10% of 500?", "50", {"5", "55" } },
+                         { "What is 10% of 500?", "50", {"5", "55" } },
+                         { "Convert ⅘ to a percentage.", "80%", {"45%", "90%" } },
+                         { "Solve: x − 3 = 9", "12", {"14", "13" } },
+                         { "Simplify: 4 ( 2x − 1 )", "8x - 4", {"8x-8", "8x+4" } },
+                         { "Which is bigger: 0.7 or 3/4?", "3/4", {"0.7", "They are equal" } },
+                         { "What’s 3x = 0?", "0", {"3", "-3" } },
+                         { "What is the mean of 2, 4, 6?", "4", {"5", "6" } },
+                         { "Multiply: ( x + 2 ) ( x + 1 )", "x²+3x+2", {"x²+2x+3", "x²+1x+2" } },
+                         { "Write 3/5 as a decimal.", "0.6", {"0.35", "0.55" } },
+                         { "What is 2/3 of 9?", "6", {"7", "5" } },
+                         { "What is 25% of 200?", "50", {"40", "60" } },
+                         { "If y = 2x, and x = 3, what’s y? ", "6", {"2", "3" } },
+                         { "Find the median of 5, 3, and 9.", "5", {"3", "9" } },
+                         { "What is the square root of 196?", "14", {"16", "24" } },
+                         { "What is 13 squared?", "169", {"139", "149" } },
+                         };
+
+    intermediateQuestions = {
+        { "Factor: x²-9", "(x + 3)(x - 3)", {"(x + 8)(x - 1)", "(x + 4)(x - 5)"} },
+        { "Solve: 2x − 3 = 7", "x = 5", {"x = 6", "x = 2"} },
+        { "What’s the slope of a vertical line?", "Undefined", {"0", "1"} },
+        { "Solve: (2x)/3 = 6", "x = 9", {"x = 8", "x = 6"} },
+        { "Evaluate: 2⁶", "64", {"32", "128"} },
+        { "Solve: x²+5x+6=0", "x = -3, -2", {"x = 3, 2", "x = -5, -1"} },
+        { "What quadrant is (–3, 4) in?", "Quadrant II", {"Quadrant IV", "Quadrant I"} },
+        { "Evaluate: (7x²-2x+4)²", "49x⁴-28x³+60x²-16x+16", {"49x⁴-27x³+64x²-12x+16", "49x⁴-21x³+81x²-16x+16"} },
+        { "Find the slope of the line between points (2,3) and (5,9).", "2", {"4", "6"} },
+        { "Solve: x/4 + 3 = 7", "x = 16", {"x = 14", "x = 8"} },
+        { "Evaluate: (2x+3)(x−5)", "2x²−7x−15", {"2x²−7x+15", "2x²+7x+15"} },
+        { "Solve for x: 3(x+4)=2(x−1)", "x=−14", {"x=−12", "x=14"} },
+        { "Solve: x²+2x-8", "x=−4 or x=2", {"x=4 or x=-2", "x=4 or x=2"} },
+        { "Evaluate: (2x-3)/5 + 7", "x=19", {"x=18", "x=21"} },
+        { "Factor: 4x²−9", "(2x−3)(2x+3)", {"(2x−3)(2x-3)", "(2x+3)(2x+3)"} },
+
+                             };
+
+    advancedQuestions = {
+        { "Evaluate: sin(30∘)", "1/2", {"1", "0"} },
+        { "Factor completely: x³-27", "(x-3)(x²+3x+9)", {"(x-3)(x²+6x+9)", "(x-6)(x²+3x+9)"} },
+        { "Derive: f(x)=3x²−5x+2", "6x-5", {"6x+5", "3x-5"} },
+        { "Derive: f(x)=sin(x)", "cos(x)", {"csc(x)", "cot(x)"} },
+        { "Evaluate: ∫5x²dx", "5x³/3 + C", {"3x³/5 + C", "5x³/3"} },
+        { "Solve: x²+4x−5=0", "x=−5 or x=1", {"x=5 or x=-1", "x=−5 or x=-1"} },
+        { "Derive: f(x)=5x⁴−3x²+2x", "20x³−6x+2", {"20x³−5x+2", "20x³−6x-2"} },
+        { "x²−4x=0", "x=0 or x=4", {"x=0 or x=-4", "x=1 or x=4"} },
+        { "A triangle has sides 5, 12, and 13. Is it right-angled?", "Yes", {"No", "Maybe"} },
+        { "What is the sum of the interior angles in a hexagon?", "720°", {"360°", "740°"} },
+        { "Solve the inequality: x²-4 <0", "-2<x<2", {"0<x<2", "-2<x<4"} },
+        { "Find the area of a circle with radius 𝑟=7.", "49π square units.", {"49 square units.", "49π"} },
+        { "Fin: Volume of a cylinder with radius 𝑟=5 units and height ℎ=10 units.", "250π cubic units.", {"200π cubic units.", "2500π cubic units."} },
+        { "Derive: f(x)=1/x²", "-2/x⁻³", {"-2/x³", "-2/x³"} },
         };
 }
 
-//PICK RANDOM SET OF QUESTIONS (BEG)
-void MainWindow::pickRandomQuestions() {
-    selectedQuestions = allQuestions;
-    std::shuffle(selectedQuestions.begin(), selectedQuestions.end(), *QRandomGenerator::global());
-    selectedQuestions.resize(3);
+
+void MainWindow::pickRandomQuestions(QuestionSet &set, QVector<Question> &pool) {
+    if (pool.size() < 5) {
+        qDebug() << "Not enough questions in pool!";
+        return;  // Handle this case as needed
+    }
+
+    set.questions = pool;
+    std::shuffle(set.questions.begin(), set.questions.end(), *QRandomGenerator::global());
+    set.questions.resize(5);
+    set.currentIndex = 0;
+    set.score = 0;
 }
 
-//SHOW QUESTIONS ON UI (BEG)
-void MainWindow::showQuestion() {
-    const Question &q = selectedQuestions[currentQuestionIndex];
+void MainWindow::showQuestion(QuestionSet &set) {
+    qDebug() << "currentIndex:" << set.currentIndex << "questions.size():" << set.questions.size();
 
-    //Combine correct + wrong answers
+    if (set.currentIndex < 0 || set.currentIndex >= set.questions.size()) {
+        set.questionLabel->setText("Quiz Over!");
+        //make timer stop when quiz is over
+        if (set.questionLabel == ui->questionLabel_beg) begTimer->stop();
+        else if (set.questionLabel == ui->questionLabel_int) intTimer->stop();
+        else if (set.questionLabel == ui->questionLabel_adv) advTimer->stop();
+
+        BGMSound->stop();
+        quizOverSound->play();
+        return;
+    }
+
+    const Question &q = set.questions[set.currentIndex];
     QStringList options = q.wrongAns;
     options.append(q.correctAns);
     std::shuffle(options.begin(), options.end(), *QRandomGenerator::global());
 
-    //Display question
-    ui->questionLabel->setText(q.text);
+    set.questionLabel->setText(q.text);
 
-    //Set button text and track correct index
-    for (int i = 0; i < optionButtons.size(); ++i) {
-        optionButtons[i]->setText(options[i]);
-        optionButtons[i]->setEnabled(true);
-        optionButtons[i]->setStyleSheet("");
+    for (int i = 0; i < set.optionButtons.size(); ++i) {
+        set.optionButtons[i]->setText(options[i]);
+        set.optionButtons[i]->setEnabled(true);
+        set.optionButtons[i]->setStyleSheet("");
     }
 
-    correctIndex = options.indexOf(q.correctAns);
+    set.correctIndex = options.indexOf(q.correctAns);
 }
 
-//check beg answer
-void MainWindow::checkAnswer(int index) {
-    for (int i = 0; i < optionButtons.size(); ++i) {
-        optionButtons[i]->setEnabled(false);
-        if (i == correctIndex) {
-            optionButtons[i]->setStyleSheet("background-color: green; color: white;");
-        } else if (i == index) {
-            optionButtons[i]->setStyleSheet("background-color: red; color: white;");
+
+void MainWindow::checkAnswer(QuestionSet &set, int selectedIndex) {
+    for (int i = 0; i < set.optionButtons.size(); ++i) {
+        set.optionButtons[i]->setEnabled(false);
+        if (i == set.correctIndex) {
+            set.optionButtons[i]->setStyleSheet("background-color: green; color: white;");
+        } else if (i == selectedIndex) {
+            set.optionButtons[i]->setStyleSheet("background-color: red; color: white;");
         }
     }
 
-    if (index == correctIndex) {
-        score++;
+    if (selectedIndex == set.correctIndex) {
+        set.score++;
+        correctSound->play();
+    } else {
+        wrongSound->play();
     }
 
-    ui->begScoreLabel->setText(QString("Score: %1").arg(score));
+    set.scoreLabel->setText(QString("Score: %1").arg(set.score));
 
-    //Go to next question
-    QTimer::singleShot(1500, this, [=]() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < selectedQuestions.size()) {
-            showQuestion();
-        } else {
-            ui->questionLabel->setText("End of Quiz!");
-        }
+    QTimer::singleShot(1500, this, [&]() {
+        set.currentIndex++;
+        showQuestion(set);
     });
+}
+
+void MainWindow::forceEndQuiz(QuestionSet &set)
+{
+    set.currentIndex = set.questions.size();
+    showQuestion(set);
+
+    for (QPushButton* &button : set.optionButtons) {
+        button->setEnabled(false);
+    }
 }
 
 
@@ -133,21 +275,21 @@ void MainWindow::startTimer()
 {
     if (ui->stackedWidget->currentIndex() == 2 && !begTimer->isActive())
     {
-        begRemaining=20;
+        begRemaining=30;
         ui->timer_beg->setText(QString("Time: %1").arg(begRemaining));
         begTimer->start(1000);
     }
 
     else if (ui->stackedWidget->currentIndex() == 3 && !intTimer->isActive())
     {
-        intRemaining=15;
+        intRemaining=25;
         ui->timer_beg_2->setText(QString("Time: %1").arg(intRemaining));
         intTimer->start(1000);
     }
 
     else if (ui->stackedWidget->currentIndex() == 4 && !advTimer->isActive())
     {
-        advRemaining=10;
+        advRemaining=20;
         ui->timer_beg_3->setText(QString("Time: %1").arg(advRemaining));
         advTimer->start(1000);
     }
@@ -165,6 +307,7 @@ void MainWindow::updatebegTimer()
     {
         begTimer->stop();
         ui->timer_beg->setText("Time's up!");
+        forceEndQuiz(beginnerSet);
     }
 }
 
@@ -180,6 +323,7 @@ void MainWindow::updateintTimer()
     {
         intTimer->stop();
         ui->timer_beg_2->setText("Time's up!");
+        forceEndQuiz(intermediateSet);
     }
 }
 
@@ -195,6 +339,7 @@ void MainWindow::updateadvTimer()
     {
         advTimer->stop();
         ui->timer_beg_3->setText("Time's up!");
+        forceEndQuiz(advancedSet);
     }
 }
 
@@ -203,6 +348,7 @@ void MainWindow::on_btn_beg_clicked()
     qDebug() << "User Clicked Beginner";
     ui->stackedWidget->setCurrentIndex(2);
     startTimer();
+    showQuestion(beginnerSet);
 }
 
 
@@ -211,6 +357,7 @@ void MainWindow::on_btn_int_clicked()
     qDebug() << "User Clicked Intermediate";
     ui->stackedWidget->setCurrentIndex(3);
     startTimer();
+    showQuestion(intermediateSet);
 }
 
 
@@ -219,6 +366,7 @@ void MainWindow::on_btn_adv_clicked()
     qDebug() << "User Clicked Advanced";
     ui->stackedWidget->setCurrentIndex(4);
     startTimer();
+    showQuestion(advancedSet);
 }
 
 
@@ -227,8 +375,11 @@ void MainWindow::on_back_beg_clicked()
     qDebug() << "User went main from beg";
     ui->stackedWidget->setCurrentIndex(1);
     begTimer->stop();
-    begRemaining=20;
+    begRemaining=30;
     ui->timer_beg->setText(QString("Time: %1").arg(begRemaining));
+
+    pickRandomQuestions(beginnerSet, beginnerQuestions);
+    BGMSound->play();
 }
 
 
@@ -237,8 +388,11 @@ void MainWindow::on_back_int_clicked()
     qDebug() << "User went main from int";
     ui->stackedWidget->setCurrentIndex(1);
     intTimer->stop();
-    intRemaining=15;
+    intRemaining=25;
     ui->timer_beg_2->setText(QString("Time: %1").arg(intRemaining));
+
+    pickRandomQuestions(intermediateSet, intermediateQuestions);
+    BGMSound->play();
 }
 
 
@@ -247,7 +401,10 @@ void MainWindow::on_back_adv_clicked()
     qDebug() << "User went main from adv";
     ui->stackedWidget->setCurrentIndex(1);
     advTimer->stop();
-    advRemaining=10;
+    advRemaining=20;
     ui->timer_beg_3->setText(QString("Time: %1").arg(advRemaining));
+
+    pickRandomQuestions(advancedSet, advancedQuestions);
+    BGMSound->play();
 }
 
